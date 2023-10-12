@@ -1,27 +1,28 @@
 import entity
 import pygame
-import moving
+import time
+from random import randint
 
 pygame.get_init()
 win = pygame.display.set_mode((1000, 1000), )
 image = pygame.image.load("pictures/bg.jpg")
-hames = entity.Enemy(pygame.transform.scale(pygame.image.load("pictures/pngwing.com.png"), [40, 40]), 3,
-                     10, 5, 1, 800, 800)
-player = entity.Enemy(pygame.transform.scale(pygame.image.load("pictures/pers.png"), [120, 100]), 5,
-                      0, 100, 5, 50, 50)
-width = 120
-height = 100
+hams = []
+start_time = time.time()
+player = entity.Enemy("pictures/pers.png", "pictures/pers_revers.png", 3, 0, 100, 5, 50, 50, 100, 120)
 run = True
 while run:
-    pygame.time.delay(50)
+    pygame.time.delay(20)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-    player.x, player.y = moving.moving_player(player.x, player.y, player.speed)
-    hames.x, hames.y = moving.moving_enemy(hames.x, hames.y, player.x, player.y, hames.speed)
     win.blit(image, (0, 0))
-    win.blit(hames.model, [hames.x, hames.y])
-    win.blit(player.model, [player.x, player.y])
+    current_time = time.time()
+    entity.Enemy.moving_enemy(hams, player, win)
+    entity.Enemy.moving_player(player, win)
+    if current_time - start_time >= 3:
+        hams.append(entity.Enemy("pictures/hames.png", "pictures/hames_revers.png", 1, 10, 5, 1, randint(0, 1000),
+                                 randint(0, 1000), 100, 60))
+        start_time = current_time   # Спавнер
     pygame.display.update()
 
 pygame.quit()
