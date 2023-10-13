@@ -2,9 +2,9 @@ import pygame
 
 
 class Enemy:
-    def __init__(self, model, revers_model, speed, spawn_rate, hp, damage, x, y, height, width):
+    def __init__(self, model, speed, spawn_rate, hp, damage, x, y, height, width):
         self.model = pygame.transform.scale(pygame.image.load(model), [height, width])
-        self.revers_model = pygame.transform.scale(pygame.image.load(revers_model), [height, width])
+        self.revers_model = pygame.transform.flip(pygame.transform.scale(pygame.image.load(model), [height, width] ), 180, 0)
         self.speed = speed
         self.spawn_rate = spawn_rate
         self.hp = hp
