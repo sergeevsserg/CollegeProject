@@ -52,7 +52,7 @@ class Enemy:
             if player.x - player.height/2 <= self[i].x <= player.x + player.height/2 and player.y - player.width/2.5 <= self[i].y <= player.y + player.width/1.2:
                 kill_list.append(i)
             for j in range(len(bullet)):
-                if bullet[j].x - bullet[j].height <= self[i].x <= bullet[j].x + bullet[j].height and bullet[j].y - bullet[j].width <= self[i].y <= bullet[j].y + bullet[j].width:
+                if bullet[j].x - bullet[j].height <= self[i].x + self[i].height / 2 <= bullet[j].x + bullet[j].height and bullet[j].y - bullet[j].width <= self[i].y + self[i].width / 2 <= bullet[j].y + bullet[j].width:
                     kill_list.append(i)
                     kill_list2.append(j)
         for b in kill_list:
@@ -63,8 +63,8 @@ class Enemy:
 
     def shooting(self, enemy, win):
         for i in range(len(self)):
-            dx = enemy.x - self[i].x
-            dy = enemy.y - self[i].y
+            dx = enemy.x - self[i].x + enemy.height / 2
+            dy = enemy.y - self[i].y + enemy.width / 2
             distanse = math.sqrt(dx * dx + dy * dy)
             self[i].x += self[i].speed * dx / distanse
             self[i].y += self[i].speed * dy / distanse

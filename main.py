@@ -24,7 +24,7 @@ player = entity.Enemy("pictures/pers.png", 3, 0, 100, 5, 440, 350, 70, 120)
 
 main_title = entity.Menu('pictures/title.png', 210, 200, 600, 80)
 start_button = entity.Menu('pictures/start_button.png', 340, 500, 300, 100)
-exit_button = entity.Menu('pictures/exit_button.png', 900, 0, 300, 100)
+exit_button = entity.Menu('pictures/exit_button.png', 900, 0, 100, 100)
 
 hams = []
 bullets = []
@@ -66,7 +66,8 @@ while run:
     if len(hams) != 0:
         entity.Enemy.shooting(bullets, hams[0], win)
     if current_time - start_time >= 2:
-        hams.append(entity.Enemy("pictures/hames.png", 1, 10, 5, 1, randint(0, 1000),
+        for i in range(2):
+            hams.append(entity.Enemy("pictures/hames.png", 1, 10, 5, 1, randint(0, 1000),
                                  randint(0, 1000), 100, 60))
         start_time = current_time
         bullets.append(entity.Enemy('pictures/bullet.png', 5, 0, 0, 10, player.x, player.y, 10, 10))
