@@ -3,14 +3,14 @@ import time
 from random import randint
 import math
 import threading
-
+import sys
 class Menu:
-    def __init__(self, picture, x, y, height, wigth,):
-        self.wigth = wigth
+    def __init__(self, picture, x, y, height, width,):
+        self.width = width
         self.height = height
         self.y = y
         self.x = x
-        self.picture = pygame.transform.scale(pygame.image.load(picture), (height, wigth))
+        self.picture = pygame.transform.scale(pygame.image.load(picture), (height, width))
 
 class Enemy:
     def __init__(self, model, speed, spawn_rate, hp, damage, x, y, height, width):
@@ -25,6 +25,22 @@ class Enemy:
         self.height = height
         self.width = width
 
+def hard():
+    global hard_k
+    while working:
+        while get_harder:
+            hard_k += 0.5
+            pygame.time.delay(30000)
+def shoot():
+    while working:
+        while is_shooting:
+            bullets.append(Enemy('pictures/bullet.png', 10, 1, 0, 4, player.x + player.height / 2, player.y + player.width / 2, 20, 20))
+            pygame.time.delay(bullets[-0].spawn_rate * 1000)
+def spawn():
+    while working:
+        while is_spawning:
+            hams.append(Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000), randint(0, 1000), 100, 60))
+            pygame.time.delay(1000)
 
 def moving_player():
     rot = False
@@ -45,12 +61,13 @@ def moving_player():
 
 def shooting():
     for i in range(len(bullets)):
-        dx = hams[i].x - bullets[i].x + hams[i].height / 2
-        dy = hams[i].y - bullets[i].y + hams[i].width / 2
-        distanse = math.sqrt(dx * dx + dy * dy)
-        bullets[i].x += bullets[i].speed * dx / distanse
-        bullets[i].y += bullets[i].speed * dy / distanse
-        win.blit(bullets[i].model, [bullets[i].x, bullets[i].y])
+        if len(hams) > 0:
+            dx = hams[0].x - bullets[i].x + hams[0].height / 2
+            dy = hams[0].y - bullets[i].y + hams[0].width / 2
+            distanse = math.sqrt(dx * dx + dy * dy)
+            bullets[i].x += bullets[i].speed * dx / distanse
+            bullets[i].y += bullets[i].speed * dy / distanse
+            win.blit(bullets[i].model, [bullets[i].x, bullets[i].y])
 def moving_enemy():
     for i in range(len(hams)):
         dx = player.x - hams[i].x
@@ -93,6 +110,9 @@ def touch_kill():
         if u < len(bullets):
             bullets.pop(u)
 
+shot = threading.Thread(target=shoot)
+sp = threading.Thread(target=spawn)
+hd = threading.Thread(target=hard)
 
 pygame.get_init()
 pygame.font.init()
@@ -107,17 +127,26 @@ exit_button = Menu('pictures/exit_button.png', 900, 0, 100, 100)
 lose_title1 = Menu('pictures/lose_text1.png', 210, 200, 600, 80)
 lose_title2 = Menu('pictures/lose_text_2.png', 400, 400, 600, 80)
 
-hams = []
+hams = [Enemy("pictures/hames.png", 1, 10, 5, 5, randint(0, 1000), randint(0, 1000),  100, 60)]
 bullets = []
 start_time = time.time()
+hard_k = 0.5
 x = 0
 y = 0
 f1 = pygame.font.Font(None, 36)
 
+is_spawning = False
+get_harder = False
+working = True
+is_shooting = False
 run = False
 death = False
 menu = True
 Game = True
+
+shot.start()
+sp.start()
+hd.start()
 
 while Game:
     while menu:
@@ -129,28 +158,37 @@ while Game:
             win.blit(exit_button.picture, (exit_button.x, exit_button.y))
             pygame.display.update()
             if event.type == pygame.QUIT:
+                working = False
                 menu = False
                 Game = False
             if event.type == pygame.MOUSEMOTION:
                 x, y = event.pos
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if start_button.x <= x <= start_button.x + start_button.height and start_button.y <= y <= start_button.y + start_button.wigth:  # Кнопка старта
+                if start_button.x <= x <= start_button.x + start_button.height and start_button.y <= y <= start_button.y + start_button.width:  # Кнопка старта
                     menu = False
                     run = True
                     anmation()
-                if exit_button.x <= x <= exit_button.x + exit_button.height and exit_button.y <= y <= exit_button.y + exit_button.wigth:  # Кнопка выхода
+                if exit_button.x <= x <= exit_button.x + exit_button.height and exit_button.y <= y <= exit_button.y + exit_button.width:  # Кнопка выхода
                     menu = False
                     Game = False
+                    working = False
 
     while run:
+        is_shooting = True
+        is_spawning = True
+        get_harder = True
         pygame.time.delay(20)
         text = f1.render('HP: ', 1, (255, 0, 0))
         text1 = f1.render(str(player.hp), 1, (255, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                working = False
                 run = False
                 Game = False
         if player.hp <= 0:
+            is_shooting = False
+            is_spawning = False
+            get_harder = False
             run = False
             menu = True
             hams.clear()
@@ -158,20 +196,17 @@ while Game:
             player.hp = 100
             player.x = 440
             player.y = 350
-        win.blit(image, (0, 0))  # вывод экрана
-        current_time = time.time()   # начало отсчёта времени  (очень не удобная вещь, надо найти замену)
-        moving_enemy()  # вызов движения врагов
-        moving_player()  # вызов движения персонажа
-        touch_kill()  # обработка касаний
+            hard_k = 1
+        win.blit(image, (0, 0))
+        current_time = time.time()
+        moving_enemy()
+        moving_player()
+        touch_kill()
         win.blit(text, (0, 0))
-        win.blit(text1, (40, 0))  # вывод хп
-        if len(hams) != 0:
-            shooting()  # вызов движения пули
-        if current_time - start_time >= 2:  # ужасный костыль, полностью переписать
-            for i in range(2):  # спавн врагов
-                hams.append(Enemy("pictures/hames.png", 1, 10, 5, 5, randint(0, 1000), randint(0, 1000),  100, 60))
-            start_time = current_time
-            bullets.append(Enemy('pictures/bullet.png', 10, 0, 0, 4, player.x + player.height / 2, player.y + player.width / 2, 20, 20))  # выстрел
+        win.blit(text1, (40, 0))
+        shooting()
         pygame.display.update()
 
+
 pygame.quit()
+sys.exit()
