@@ -1,5 +1,4 @@
 import pygame
-import time
 from random import randint
 import math
 import threading
@@ -13,7 +12,7 @@ class Menu:
         self.picture = pygame.transform.scale(pygame.image.load(picture), (height, width))
 
 class Enemy:
-    def __init__(self, model, speed, spawn_rate, hp, damage, x, y, height, width):
+    def __init__(self, model, speed, spawn_rate, hp, damage, x, y, height, width, lvl = None):
         self.model = pygame.transform.scale(pygame.image.load(model), [height, width])
         self.revers_model = pygame.transform.flip(pygame.transform.scale(pygame.image.load(model), [height, width]), 1, 0)
         self.speed = speed
@@ -24,17 +23,27 @@ class Enemy:
         self.y = y
         self.height = height
         self.width = width
+        self.lvl = lvl
+
+def lvl():
+    global xp, xp_need
+    key = 20
+    pygame.draw.rect(win, (42, 219, 219), (0, 0, 1000 * xp/xp_need, 20))
+    if xp >= xp_need:
+        xp = 0
+        xp_need += key * 2
+        key = key * 2
 
 def hard():
     global hard_k
     while working:
         while get_harder:
-            hard_k += 0.5
+            hard_k += 0.2
             pygame.time.delay(30000)
 def shoot():
     while working:
         while is_shooting:
-            bullets.append(Enemy('pictures/bullet.png', 10, 1, 0, 4, player.x + player.height / 2, player.y + player.width / 2, 20, 20))
+            bullets.append(Enemy('pictures/bullet.png', 10, 1, 0, 4, player.x + player.height / 2, player.y + player.width / 2, 40, 40))
             pygame.time.delay(bullets[-0].spawn_rate * 1000)
 def spawn():
     while working:
@@ -81,16 +90,17 @@ def moving_enemy():
             win.blit(hams[i].model, [hams[i].x, hams[i].y])
 
 def anmation():
-    for count in range(500):
+    for count in range(50):
         win.blit(image, (0, 0))
         win.blit(player.model, [player.x, player.y])
-        win.blit(main_title.picture, (main_title.x, main_title.y - count))
-        win.blit(start_button.picture, (start_button.x, start_button.y + count))
-        win.blit(exit_button.picture, (exit_button.x + count, 0))
+        win.blit(main_title.picture, (main_title.x, main_title.y - count * 10))
+        win.blit(start_button.picture, (start_button.x, start_button.y + count * 10))
+        win.blit(exit_button.picture, (exit_button.x + count * 10, 0))
         pygame.display.update()
         pygame.time.delay(1)
 
 def touch_kill():
+    global xp
     kill_list = []
     kill_list2 = []
     for i in range(len(hams)):
@@ -98,11 +108,12 @@ def touch_kill():
             player.hp -= hams[i].damage
             kill_list.append(i)
         for j in range(len(bullets)):
-            if bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[j].height and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + bullets[j].width:
+            if bullets[j].x - bullets[j].height / 2 <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[j].height / 2 and bullets[j].y - bullets[j].width / 2 <= hams[i].y + hams[i].width / 2 <= bullets[j].y + bullets[j].width / 2:
                 hams[i].hp -= bullets[j].damage
                 kill_list2.append(j)
         if hams[i].hp <= 0:
             kill_list.append(i)
+            xp += 20 * hard_k
     for b in kill_list:
         if b < len(hams):
             hams.pop(b)
@@ -120,7 +131,7 @@ win = pygame.display.set_mode((1000, 1000), )
 pygame.display.set_caption('FOXYSHMERTS.INC')
 
 image = pygame.image.load("pictures/bg.jpg")
-player = Enemy("pictures/pers.png", 3, 0, 100, 5, 440, 350, 70, 120)
+player = Enemy("pictures/pers.png", 3, 0, 100, 5, 440, 350, 70, 120, 1)
 main_title = Menu('pictures/title.png', 210, 200, 600, 80)
 start_button = Menu('pictures/start_button.png', 340, 500, 300, 100)
 exit_button = Menu('pictures/exit_button.png', 900, 0, 100, 100)
@@ -129,10 +140,11 @@ lose_title2 = Menu('pictures/lose_text_2.png', 400, 400, 600, 80)
 
 hams = [Enemy("pictures/hames.png", 1, 10, 5, 5, randint(0, 1000), randint(0, 1000),  100, 60)]
 bullets = []
-start_time = time.time()
-hard_k = 0.5
+hard_k = 0.8
 x = 0
 y = 0
+xp = 0
+xp_need = 100
 f1 = pygame.font.Font(None, 36)
 
 is_spawning = False
@@ -198,10 +210,10 @@ while Game:
             player.y = 350
             hard_k = 1
         win.blit(image, (0, 0))
-        current_time = time.time()
         moving_enemy()
         moving_player()
         touch_kill()
+        lvl()
         win.blit(text, (0, 0))
         win.blit(text1, (40, 0))
         shooting()
