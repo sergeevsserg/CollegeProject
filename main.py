@@ -48,7 +48,7 @@ def hard():
     while working:
         while get_harder:
             hard_k += 0.5
-            pygame.time.delay(30000)
+            pygame.time.delay(40000)
 
 
 def shoot():
@@ -57,7 +57,7 @@ def shoot():
             bullets.append(
                 Enemy('pictures/bullet.png', 10, 1, 0, 4, player.x + player.height / 2, player.y + player.width / 2, 20,
                       20))
-            pygame.time.delay(bullets[-0].spawn_rate * 1000)
+            pygame.time.delay(bullets[-0].spawn_rate * 1000 + buff[1] * 100)
 
 
 def spawn():
@@ -72,14 +72,14 @@ def moving_player():
     rot = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a] and player.x > 0:
-        player.x -= player.speed
+        player.x -= player.speed - buff[2]
         rot = True
     if keys[pygame.K_d] and player.x < 880:
-        player.x += player.speed
+        player.x += player.speed + buff[2]
     if keys[pygame.K_w] and player.y > 0:
-        player.y -= player.speed
+        player.y -= player.speed - buff[2]
     if keys[pygame.K_s] and player.y < 900:
-        player.y += player.speed
+        player.y += player.speed + buff[2]
     if rot:
         win.blit(player.revers_model, [player.x, player.y])
     else:
@@ -96,10 +96,10 @@ def xp():
         Pause = True
         is_shooting = False
         is_spawning = False
-        up()
+        level_up()
 
 
-def shooting():
+def projectile_flight():
     for i in range(len(bullets)):
         if len(hams) > 0:
             dx = hams[0].x - bullets[i].x + hams[0].height / 2
@@ -123,7 +123,7 @@ def moving_enemy():
             win.blit(hams[i].model, [hams[i].x, hams[i].y])
 
 
-def anmation():
+def animation():
     for count in range(50):
         win.blit(image, (0, 0))
         win.blit(player.model, [player.x, player.y])
@@ -139,16 +139,18 @@ def touch_kill():
     kill_list = []
     kill_list2 = []
     for i in range(len(hams)):
-        if player.x - player.height / 2 <= hams[
-            i].x <= player.x + player.height / 2 and player.y - player.width / 2.5 <= hams[
-            i].y <= player.y + player.width / 1.2:
-            player.hp -= hams[i].damage
+        if player.x - player.height / 2 <= hams[i].x <= player.x + player.height / 2 and player.y - player.width / 2.5 <= hams[i].y <= player.y + player.width / 1.2:
+            if hams[i].damage - buff[3] - debuff[0] > 0:
+                player.hp -= hams[i].damage - buff[3] - debuff[0]
+            else:
+                player.hp -= 1
             kill_list.append(i)
         for j in range(len(bullets)):
-            if bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[
-                j].height and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + \
-                    bullets[j].width:
-                hams[i].hp -= bullets[j].damage
+            if bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[j].height and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + bullets[j].width:
+                if bullets[j].damage + buff[0] > 0:
+                    hams[i].hp -= bullets[j].damage + buff[0]
+                else:
+                    hams[i].hp -= 0.1
                 kill_list2.append(j)
         if hams[i].hp <= 0:
             kill_list.append(i)
@@ -161,7 +163,7 @@ def touch_kill():
             bullets.pop(u)
 
 
-def up():
+def level_up():
     global working, menu, Game, x, y, choice, Pause, is_spawning, is_shooting
     a = randint(0, len(upgrades) - 1)
     b = randint(0, len(upgrades) - 1)
@@ -181,27 +183,44 @@ def up():
             if event.type == pygame.MOUSEMOTION:
                 x, y = event.pos
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if 40 <= x < 340 and 200 <= x <= 800:
+                if 40 <= x < 340 and 200 <= y <= 800:
+                    up(a)
                     Pause = False
                     choice = False
                     is_spawning = True
                     is_shooting = True
-                elif 350 <= x < 650 and 200 <= x <= 800:
+                elif 350 <= x < 650 and 200 <= y <= 800:
+                    up(b)
                     Pause = False
                     choice = False
                     is_spawning = True
                     is_shooting = True
-                elif 660 <= x < 960 and 200 <= x <= 800:
+                elif 660 <= x < 960 and 200 <= y <= 800:
+                    up(c)
                     Pause = False
                     choice = False
                     is_spawning = True
                     is_shooting = True
         pygame.time.delay(30)
 
+def up(a):
+    if upgrades[a].type == 'up_p':
+        buff[0] += upgrades[a].damage
+        buff[1] += upgrades[a].cd
+        buff[2] += upgrades[a].speed
+        player.hp += upgrades[a].hp
+        buff[3] += upgrades[a].prot
+    else:
+        debuff[0] += upgrades[a].damage
+        debuff[1] += upgrades[a].speed
+
 
 shot = threading.Thread(target=shoot)
 sp = threading.Thread(target=spawn)
 hd = threading.Thread(target=hard)
+
+buff = [0, 0, 0, 0]
+debuff = [0, 0]
 
 pygame.get_init()
 pygame.font.init()
@@ -224,7 +243,7 @@ upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/bi
             upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 5, 0, 0),
             upgrade_card("Бига", 2, "pictures/up_cards/biga.png", 'up_p', 0, 0, 0, 75, 0),
             upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 8),
-            upgrade_card("Калибр бабахи", 3, "pictures/up_cards/babaha.png", 'up_p', 20, -8, 0, 0, 0),
+            upgrade_card("Калибр бабахи", 3, "pictures/up_cards/babaha.png", 'up_p', 20, 8, 0, 0, 0),
             upgrade_card("Пушка от A10 Thunderbolt", 3, "pictures/up_cards/a10.png", 'up_p', -40, -20, 0, 0, 0)]
 
 # upgrades  = [upgrade_card("Большой калибр", 1, "Большие пушки - большой калибр. Увеличивает урон, увеличивает перезардку", 'up_p', 5, -2, 0, 0, 0),
@@ -284,7 +303,7 @@ while Game:
                 if start_button.x <= x <= start_button.x + start_button.height and start_button.y <= y <= start_button.y + start_button.width:  # Кнопка старта
                     menu = False
                     run = True
-                    anmation()
+                    animation()
                 if exit_button.x <= x <= exit_button.x + exit_button.height and exit_button.y <= y <= exit_button.y + exit_button.width:  # Кнопка выхода
                     menu = False
                     Game = False
@@ -324,7 +343,7 @@ while Game:
             xp()
         win.blit(text, (0, 0))
         win.blit(text1, (40, 0))
-        shooting()
+        projectile_flight()
         pygame.display.update()
 
 pygame.quit()
