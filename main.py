@@ -63,7 +63,7 @@ def shoot():
 def spawn():
     while working:
         while is_spawning:
-            hams.append(Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
+            hams.append(Enemy("pictures/hames.png", 1 * hard_k + debuff[1], 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
                               randint(0, 1000), 100, 60))
             pygame.time.delay(1000)
 
@@ -72,12 +72,12 @@ def moving_player():
     rot = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a] and player.x > 0:
-        player.x -= player.speed - buff[2]
+        player.x -= player.speed + buff[2]
         rot = True
     if keys[pygame.K_d] and player.x < 880:
         player.x += player.speed + buff[2]
     if keys[pygame.K_w] and player.y > 0:
-        player.y -= player.speed - buff[2]
+        player.y -= player.speed + buff[2]
     if keys[pygame.K_s] and player.y < 900:
         player.y += player.speed + buff[2]
     if rot:
@@ -91,7 +91,7 @@ def xp():
     pygame.draw.rect(win, (37, 245, 165), (0, 0, 1000 * current_xp / xp_need, 20))
     if xp_need <= current_xp:
         current_xp = 0
-        xp_need *= 2
+        xp_need *= 1.6
         choice = True
         Pause = True
         is_shooting = False
@@ -239,26 +239,12 @@ upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/bi
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
             upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 2),
             upgrade_card("Усовершенствованный затвор", 1, "pictures/up_cards/b_shutter.png", 'up_p', -2, -2, 0, 0, 0),
-            upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -2, 0, 0),
-            upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 5, 0, 0),
+            upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -0.5, 0, 0),
+            upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 1, 0, 0),
             upgrade_card("Бига", 2, "pictures/up_cards/biga.png", 'up_p', 0, 0, 0, 75, 0),
             upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 8),
             upgrade_card("Калибр бабахи", 3, "pictures/up_cards/babaha.png", 'up_p', 20, 8, 0, 0, 0),
             upgrade_card("Пушка от A10 Thunderbolt", 3, "pictures/up_cards/a10.png", 'up_p', -40, -20, 0, 0, 0)]
-
-# upgrades  = [upgrade_card("Большой калибр", 1, "Большие пушки - большой калибр. Увеличивает урон, увеличивает перезардку", 'up_p', 5, -2, 0, 0, 0),
-#    upgrade_card("Миник", 1, "Выпей миник, немного повысь лимит здоровья", 'up_p', 0, 0, 0, 25, 0),
-#    upgrade_card("Адская плеть", 1,"Раскрутите адскую плеть, наносящую средний урон", 'new_w', 0, 0, 0, 0, 0),
-#   upgrade_card("Усовершенствованный затвор", 1, "Установите улучшеный затвор, увеличив тем самым скорострельнсть, немного уменьшая урон", 'up_p', -2, 2, 0, 0, 0),
-#   upgrade_card("Бронепластина", 1, "Установите дополнительную бронепластину, уменьшающую входящий урон", 'up_p', 0, 0, 0, 0, 5),
-#   upgrade_card("Липкое масло", 1, "Залейте пол липким маслом, замедляющим врагов", 'Weakness', 0, 0, -3, 0, 0),
-#   upgrade_card("Паровые тяги", 2, "Уфффф что за тяги такие, паровые, кэфтэме. Увеличивают вашу скорость", 'up_p', 0, 0, 5, 0, 0),
-#   upgrade_card("Бига", 2, "Бахни бигу, получи ощутимый прирост к здоровью", 'up_p', 0, 0, 0, 75, 0),
-#   upgrade_card("Квантовый щит", 2, "С помощью новейших технологий ощутимо увеличте свою броню", 'up_p', 0, 0, 0 , 0, 12),
-#   upgrade_card("Заряженное копьё", 2, "Бросьте медленное копьё, наносящее высокий урон", 'new_w', 0, 0, 0, 0, 0),
-#   upgrade_card("Калибр бабахи", 2, "Самые огромные фугасы, но и перезарядка тоже огромная. Мощная прибавка к урону и перезарядке", 'up_p', 20, -8, 0, 0, 0),
-#  upgrade_card("Пушка от A10 Thunderbolt", 2, "Тот самый БРРРРРРРРРРРРРРРРРР!!!! Стоп, а где урон?! Огромный прирост к скорострельности, но про урон забудьте", 'up_p', -40, 20, 0, 0, 0),
-
 
 hams = [Enemy("pictures/hames.png", 1, 10, 5, 5, randint(0, 1000), randint(0, 1000), 100, 60)]
 bullets = []
