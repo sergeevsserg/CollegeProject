@@ -48,7 +48,7 @@ def hard():
     while working:
         while get_harder:
             hard_k += 0.5
-            pygame.time.delay(40000)
+            pygame.time.delay(60000)
 
 
 def shoot():
@@ -150,14 +150,14 @@ def touch_kill():
                 if bullets[j].damage + buff[0] > 0:
                     hams[i].hp -= bullets[j].damage + buff[0]
                 else:
-                    hams[i].hp -= 0.1
+                    hams[i].hp -= 0.2
                 kill_list2.append(j)
         if hams[i].hp <= 0:
             kill_list.append(i)
     for b in kill_list:
         if b < len(hams):
             hams.pop(b)
-            current_xp += 20
+            current_xp += 20 * hard_k
     for u in kill_list2:
         if u < len(bullets):
             bullets.pop(u)
