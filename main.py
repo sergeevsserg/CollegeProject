@@ -48,7 +48,7 @@ def hard():
     while working:
         while get_harder:
             hard_k += 0.5
-            pygame.time.delay(40000)
+            pygame.time.delay(60000)
 
 
 def shoot():
@@ -61,25 +61,49 @@ def shoot():
 
 
 def spawn():
+    global debuff
     a = 0
     while working:
         while is_spawning:
             h = randint(1, 4)
             if h == 1:
-                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
-                               randint(-10, 0), 100, 60)
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k + debuff[2], 5 * hard_k,
+                               randint(0, 1000),
+                               randint(-60, -40), 100, 60)
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                                randint(0, 1000),
+                                randint(-60, -40), 70, 70)
             elif h == 2:
-                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(1000, 1010),
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
+                               randint(1000, 1010),
                                randint(0, 1000), 100, 60)
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                                randint(1000, 1010),
+                                randint(0, 1000), 70, 70)
             elif h == 3:
-                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
+                               randint(0, 1000),
                                randint(1000, 1010), 100, 60)
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                                randint(0, 1000),
+                                randint(1000, 1010), 70, 70)
             else:
-                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(-10, 0),
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
+                               randint(-60, -40),
                                randint(0, 1000), 100, 60)
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                                randint(-60, -40),
+                                randint(0, 1000), 70,70)
             hams.append(robosp)
             a += 1
-            pygame.time.delay(1500)
+            if a == 10:
+                hams.append(streloc)
+                a = 0
+            for i in hams:
+                if i.width == 70:
+                    print("True")
+                    break
+            pygame.time.delay(1200)
 
 
 def moving_player():
@@ -150,22 +174,27 @@ def animation():
 
 
 def touch_kill():
+    global xp_cof
     global current_xp
     kill_list = []
     kill_list2 = []
     for i in range(len(hams)):
-        if player.x - player.height / 2 <= hams[i].x <= player.x + player.height / 2 and player.y - player.width / 2.5 <= hams[i].y <= player.y + player.width / 1.2:
+        if player.x - player.height / 2 <= hams[
+            i].x <= player.x + player.height / 2 and player.y - player.width / 2.5 <= hams[
+            i].y <= player.y + player.width / 1.2:
             if hams[i].damage - buff[3] - debuff[0] > 0:
                 player.hp -= hams[i].damage - buff[3] + debuff[0]
             else:
                 player.hp -= 1
             kill_list.append(i)
         for j in range(len(bullets)):
-            if bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[j].height and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + bullets[j].width:
+            if bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[
+                j].height and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + \
+                    bullets[j].width:
                 if bullets[j].damage + buff[0] > 0:
                     hams[i].hp -= bullets[j].damage + buff[0]
                 else:
-                    hams[i].hp -= 0.1
+                    hams[i].hp -= 0.15
                 kill_list2.append(j)
         if hams[i].hp <= 0:
             kill_list.append(i)
@@ -173,7 +202,7 @@ def touch_kill():
         if b < len(hams):
             hams.pop(b)
             bullets.clear()
-            current_xp += 20
+            current_xp += 20 * xp_cof
     for u in kill_list2:
         if u < len(bullets):
             bullets.pop(u)
@@ -219,6 +248,7 @@ def level_up():
                     is_shooting = True
         pygame.time.delay(30)
 
+
 def up(a):
     if upgrades[a].type == 'up_p':
         buff[0] += upgrades[a].damage
@@ -242,8 +272,6 @@ pygame.get_init()
 pygame.font.init()
 win = pygame.display.set_mode((1000, 1000), )
 pygame.display.set_caption('FOXYSHMERTS.INC')
-
-
 locations = [pygame.image.load("pictures/bg.jpg"),
              pygame.image.load("pictures/sand.jpg"),
              pygame.transform.scale(pygame.image.load("pictures/iron.jpg"), (1000, 1000))]
@@ -259,15 +287,14 @@ loc = 0
 
 bg = locations[loc]
 
-
 upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/big_cal.png", 'up_p', 5, 2, 0, 0, 0),
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
-            upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 2),
+            upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 1),
             upgrade_card("Усовершенствованный затвор", 1, "pictures/up_cards/b_shutter.png", 'up_p', -2, -2, 0, 0, 0),
             upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -0.5, 0, 0),
             upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 2, 0, 0),
             upgrade_card("Бига", 2, "pictures/up_cards/biga.png", 'up_p', 0, 0, 0, 75, 0),
-            upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 8),
+            upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 3),
             upgrade_card("Калибр бабахи", 3, "pictures/up_cards/babaha.png", 'up_p', 20, 8, 0, 0, 0),
             upgrade_card("Пушка от A10 Thunderbolt", 3, "pictures/up_cards/a10.png", 'up_p', -30, -20, 0, 0, 0)]
 
@@ -287,6 +314,7 @@ upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/bi
 
 hams = [Enemy("pictures/hames.png", 1, 10, 5, 5, randint(0, 1000), randint(0, 1000), 100, 60)]
 bullets = []
+enemy_bullets = []
 start_time = time.time()
 hard_k = 0.5
 x = 0
@@ -295,6 +323,8 @@ current_xp = 0
 xp_need = 100
 xp_cof = 1
 f1 = pygame.font.Font(None, 36)
+
+
 
 text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
 
