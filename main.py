@@ -16,7 +16,7 @@ class Menu:
 
 
 class Enemy:
-    def __init__(self, model, speed, spawn_rate, hp, damage, x, y, height, width):
+    def __init__(self, model, speed, spawn_rate, hp, damage, x, y, height, width, ):
         self.model = pygame.transform.scale(pygame.image.load(model), [height, width])
         self.revers_model = pygame.transform.flip(pygame.transform.scale(pygame.image.load(model), [height, width]), 1,
                                                   0)
@@ -63,6 +63,8 @@ def shoot():
 def spawn():
     global debuff
     a = 0
+    b = 0
+    c = 0
     while working:
         while is_spawning:
             h = randint(1, 4)
@@ -70,9 +72,15 @@ def spawn():
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k + debuff[2], 5 * hard_k,
                                randint(0, 1000),
                                randint(-60, -40), 100, 60)
-                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 1 * hard_k, 8 * hard_k, 0,
                                 randint(0, 1000),
                                 randint(-60, -40), 70, 70)
+                killerbot = Enemy("pictures/killerbot.png", 1 * hard_k, 1 * hard_k, 2 * hard_k + debuff[2], 10 * hard_k,
+                                  randint(0, 1000),
+                                  randint(-60, -40), 100, 100)
+                heavybot = Enemy("pictures/heavybot.jpg", 0.4 * hard_k, 1 * hard_k, 40 * hard_k + debuff[2], 50 * hard_k,
+                                 randint(0, 1000),
+                                 randint(-60, -40), 300, 150)
             elif h == 2:
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
                                randint(1000, 1010),
@@ -80,6 +88,12 @@ def spawn():
                 streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(1000, 1010),
                                 randint(0, 1000), 70, 70)
+                killerbot = Enemy("pictures/killerbot.png", 1 * hard_k, 1 * hard_k, 2 * hard_k + debuff[2], 10 * hard_k,
+                                  randint(1000, 1010),
+                                  randint(0, 1000), 100, 100)
+                heavybot = Enemy("pictures/heavybot.jpg", 0.4 * hard_k, 1 * hard_k, 40 * hard_k + debuff[2], 50 * hard_k,
+                                 randint(1000, 1010),
+                                 randint(0, 1000), 300, 150)
             elif h == 3:
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
                                randint(0, 1000),
@@ -87,6 +101,12 @@ def spawn():
                 streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(0, 1000),
                                 randint(1000, 1010), 70, 70)
+                killerbot = Enemy("pictures/killerbot.png", 1 * hard_k, 1 * hard_k, 2 * hard_k + debuff[2], 10 * hard_k,
+                                  randint(0, 1000),
+                                  randint(1000, 1010), 100, 100)
+                heavybot = Enemy("pictures/heavybot.jpg", 0.4 * hard_k, 1 * hard_k, 40 * hard_k + debuff[2], 50 * hard_k,
+                                 randint(0, 1000),
+                                 randint(1000, 1010), 300, 150)
             else:
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
                                randint(-60, -40),
@@ -94,11 +114,25 @@ def spawn():
                 streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(-60, -40),
                                 randint(0, 1000), 70, 70)
+                killerbot = Enemy("pictures/killerbot.png", 1 * hard_k, 1 * hard_k, 2 * hard_k + debuff[2], 10 * hard_k,
+                                  randint(-60, -40),
+                                  randint(0, 1000), 100, 100)
+                heavybot = Enemy("pictures/heavybot.jpg", 0.4 * hard_k, 1 * hard_k, 40 * hard_k + debuff[2], 50 * hard_k,
+                                 randint(-60, -40),
+                                 randint(0, 1000), 300, 150)
             hams.append(robosp)
             a += 1
-            if a == 10:
+            b += 1
+            c += 1
+            if a == 6:
                 hams.append(streloc)
                 a = 0
+            if b == 8:
+                hams.append(killerbot)
+                b = 0
+            if c == 40:
+                hams.append(heavybot)
+                c = 0
             pygame.time.delay(1500)
 
 
@@ -126,7 +160,7 @@ def xp():
     pygame.draw.rect(win, (37, 245, 165), (0, 0, 1000 * current_xp / xp_need, 20))
     if xp_need <= current_xp:
         current_xp = 0
-        xp_need *= 2
+        xp_need *= 1.2
         choice = True
         Pause = True
         is_shooting = False
@@ -189,6 +223,7 @@ def enemy_shooting():
                     except IndexError:
                         None
 
+
 def animation():
     for count in range(50):
         win.blit(bg, (0, 0))
@@ -201,6 +236,7 @@ def animation():
 
 
 def touch_kill():
+    global score
     global xp_cof
     global current_xp
     kill_list = []
@@ -238,6 +274,7 @@ def touch_kill():
             hams.pop(b)
             bullets.clear()
             current_xp += 20 * xp_cof
+            score += 1
     for u in kill_list2:
         if u < len(bullets):
             bullets.pop(u)
@@ -331,8 +368,8 @@ bg = locations[loc]
 upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/big_cal.png", 'up_p', 5, 2, 0, 0, 0),
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
             upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 1),
-            upgrade_card("Усовершенствованный затвор", 1, "pictures/up_cards/b_shutter.png", 'up_p', -2, -2, 0, 0, 0),
-            upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -0.5, 0, 0),
+            upgrade_card("Усовершенствованный затвор", 1, "pictures/up_cards/b_shutter.png", 'up_p', -0.5, -2, 0, 0, 0),
+            upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -0.1, 0, 0),
             upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 2, 0, 0),
             upgrade_card("Бига", 2, "pictures/up_cards/biga.png", 'up_p', 0, 0, 0, 75, 0),
             upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 3),
@@ -359,6 +396,7 @@ enemy_bullets = []
 cords_x = []
 cords_y = []
 start_time = time.time()
+score = 0
 hard_k = 0.5
 x = 0
 y = 0
@@ -367,6 +405,7 @@ xp_need = 50
 xp_cof = 1
 f1 = pygame.font.Font(None, 36)
 
+text_score = f1.render("Счёт: ", 1, (255, 0, 0))
 text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
 
 rot = False
@@ -425,8 +464,8 @@ while Game:
                         debuff = [-2, 2, 0]
                         xp_cof = 1
                     else:
-                        text_loc = f1.render("+10 здоровья врагов, +2 к урону врагов, +50% к опыту", 1, (255, 0, 0))
-                        debuff = [2, 0, 10]
+                        text_loc = f1.render("+5 здоровья врагов, +5 к урону врагов, +50% к опыту", 1, (255, 0, 0))
+                        debuff = [5, 0, 5]
                         xp_cof = 1.5
 
     while run:
@@ -437,6 +476,7 @@ while Game:
         pygame.time.delay(20)
         text = f1.render('HP: ', 1, (255, 0, 0))
         text1 = f1.render(str(player.hp), 1, (255, 0, 0))
+        text3 = f1.render(str(score), 1, (255, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 working = False
@@ -466,6 +506,8 @@ while Game:
             moving_player()
             touch_kill()
             xp()
+        win.blit(text_score, (860, 0))
+        win.blit(text3, (930, 0))
         win.blit(text, (0, 0))
         win.blit(text1, (40, 0))
         projectile_flight()
