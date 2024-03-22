@@ -70,40 +70,36 @@ def spawn():
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k + debuff[2], 5 * hard_k,
                                randint(0, 1000),
                                randint(-60, -40), 100, 60)
-                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(0, 1000),
                                 randint(-60, -40), 70, 70)
             elif h == 2:
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
                                randint(1000, 1010),
                                randint(0, 1000), 100, 60)
-                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(1000, 1010),
                                 randint(0, 1000), 70, 70)
             elif h == 3:
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
                                randint(0, 1000),
                                randint(1000, 1010), 100, 60)
-                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(0, 1000),
                                 randint(1000, 1010), 70, 70)
             else:
                 robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k + debuff[2],
                                randint(-60, -40),
                                randint(0, 1000), 100, 60)
-                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 4 * hard_k, 8 * hard_k,
+                streloc = Enemy("pictures/strelok.png", 1 * hard_k, 10 * hard_k, 8 * hard_k, 0,
                                 randint(-60, -40),
-                                randint(0, 1000), 70,70)
+                                randint(0, 1000), 70, 70)
             hams.append(robosp)
             a += 1
             if a == 10:
                 hams.append(streloc)
                 a = 0
-            for i in hams:
-                if i.width == 70:
-                    print("True")
-                    break
-            pygame.time.delay(1200)
+            pygame.time.delay(1500)
 
 
 def moving_player():
@@ -149,6 +145,17 @@ def projectile_flight():
             win.blit(bullets[i].model, [bullets[i].x, bullets[i].y])
 
 
+def enemy_projectile_flight():
+    for i in range(len(enemy_bullets)):
+        if i < len(enemy_bullets):
+            dx = cords_x[i] - enemy_bullets[i].x + player.height / 2
+            dy = cords_y[i] - enemy_bullets[i].y + player.width / 2
+            distanse = math.sqrt(dx * dx + dy * dy)
+            enemy_bullets[i].x += enemy_bullets[i].speed * (dx + dy) / distanse
+            enemy_bullets[i].y += enemy_bullets[i].speed * (dy - dx) / distanse
+            win.blit(enemy_bullets[i].model, [enemy_bullets[i].x, enemy_bullets[i].y])
+
+
 def moving_enemy():
     for i in range(len(hams)):
         dx = player.x - hams[i].x
@@ -161,6 +168,26 @@ def moving_enemy():
         else:
             win.blit(hams[i].model, [hams[i].x, hams[i].y])
 
+
+def enemy_shooting():
+    while working:
+        while is_shoot_enemy:
+            a = 0
+            for some in hams:
+                if some.width == 70:
+                    cords_x.append(player.x)
+                    cords_y.append(player.y)
+                    enemy_bullets.append(Enemy("pictures/enemy_shoot.png", 8, 1, 0, 1, some.x, some.y, 25, 25))
+                    a += 1
+            pygame.time.delay(5000)
+            if len(enemy_bullets) > 0:
+                for i in range(a):
+                    try:
+                        enemy_bullets.pop()
+                        cords_x.pop()
+                        cords_y.pop()
+                    except IndexError:
+                        None
 
 def animation():
     for count in range(50):
@@ -178,24 +205,32 @@ def touch_kill():
     global current_xp
     kill_list = []
     kill_list2 = []
+    kill_list3 = []
     for i in range(len(hams)):
-        if player.x - player.height / 2 <= hams[
-            i].x <= player.x + player.height / 2 and player.y - player.width / 2.5 <= hams[
-            i].y <= player.y + player.width / 1.2:
+        if (player.x - player.height / 2 <= hams[i].x <= player.x + player.height / 2
+                and player.y - player.width / 2.5 <= hams[i].y <= player.y + player.width / 1.2):
             if hams[i].damage - buff[3] - debuff[0] > 0:
                 player.hp -= hams[i].damage - buff[3] + debuff[0]
             else:
                 player.hp -= 1
             kill_list.append(i)
         for j in range(len(bullets)):
-            if bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[
-                j].height and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + \
-                    bullets[j].width:
+            if (bullets[j].x - bullets[j].height <= hams[i].x + hams[i].height / 2 <= bullets[j].x + bullets[j].height
+                    and bullets[j].y - bullets[j].width <= hams[i].y + hams[i].width / 2 <= bullets[j].y + bullets[
+                        j].width):
                 if bullets[j].damage + buff[0] > 0:
                     hams[i].hp -= bullets[j].damage + buff[0]
                 else:
-                    hams[i].hp -= 0.15
+                    hams[i].hp -= 0.2
                 kill_list2.append(j)
+        for o in range(len(enemy_bullets)):
+            if (player.x - player.height / 2 <= enemy_bullets[o].x <= player.x + player.height / 2
+                    and player.y - player.width / 2.5 <= enemy_bullets[o].y <= player.y + player.width / 1.2):
+                if enemy_bullets[o].damage - buff[3] + debuff[0] > 0:
+                    player.hp -= enemy_bullets[o].damage - buff[3] + debuff[0]
+                else:
+                    player.hp -= 1
+                kill_list3.append(o)
         if hams[i].hp <= 0:
             kill_list.append(i)
     for b in kill_list:
@@ -206,6 +241,11 @@ def touch_kill():
     for u in kill_list2:
         if u < len(bullets):
             bullets.pop(u)
+    for z in kill_list3:
+        if z < len(enemy_bullets):
+            enemy_bullets.pop(z)
+            cords_x.pop(z)
+            cords_y.pop(z)
 
 
 def level_up():
@@ -261,6 +301,7 @@ def up(a):
         debuff[1] += upgrades[a].speed
 
 
+en_shot = threading.Thread(target=enemy_shooting)
 shot = threading.Thread(target=shoot)
 sp = threading.Thread(target=spawn)
 hd = threading.Thread(target=hard)
@@ -315,20 +356,21 @@ upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/bi
 hams = [Enemy("pictures/hames.png", 1, 10, 5, 5, randint(0, 1000), randint(0, 1000), 100, 60)]
 bullets = []
 enemy_bullets = []
+cords_x = []
+cords_y = []
 start_time = time.time()
 hard_k = 0.5
 x = 0
 y = 0
 current_xp = 0
-xp_need = 100
+xp_need = 50
 xp_cof = 1
 f1 = pygame.font.Font(None, 36)
-
-
 
 text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
 
 rot = False
+is_shoot_enemy = False
 is_spawning = False
 get_harder = False
 working = True
@@ -342,7 +384,7 @@ choice = False
 shot.start()
 sp.start()
 hd.start()
-
+en_shot.start()
 while Game:
     while menu:
         for event in pygame.event.get():
@@ -391,6 +433,7 @@ while Game:
         is_shooting = True
         is_spawning = True
         get_harder = True
+        is_shoot_enemy = True
         pygame.time.delay(20)
         text = f1.render('HP: ', 1, (255, 0, 0))
         text1 = f1.render(str(player.hp), 1, (255, 0, 0))
@@ -401,12 +444,14 @@ while Game:
                 Game = False
         if player.hp <= 0:
             buff = [0, 0, 0, 0]
-            debuff = [0, 0]
+            debuff = [0, 0, 0]
+            is_shoot_enemy = False
             is_shooting = False
             is_spawning = False
             get_harder = False
             run = False
             menu = True
+            enemy_bullets.clear()
             hams.clear()
             bullets.clear()
             xp_need = 100
@@ -424,6 +469,8 @@ while Game:
         win.blit(text, (0, 0))
         win.blit(text1, (40, 0))
         projectile_flight()
+        enemy_projectile_flight()
+
         pygame.display.update()
 
 pygame.quit()
