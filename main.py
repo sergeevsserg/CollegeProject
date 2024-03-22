@@ -125,7 +125,7 @@ def moving_enemy():
 
 def animation():
     for count in range(50):
-        win.blit(image, (0, 0))
+        win.blit(bg, (0, 0))
         win.blit(player.model, [player.x, player.y])
         win.blit(main_title.picture, (main_title.x, main_title.y - count * 10))
         win.blit(start_button.picture, (start_button.x, start_button.y + count * 10))
@@ -227,13 +227,18 @@ pygame.font.init()
 win = pygame.display.set_mode((1000, 1000), )
 pygame.display.set_caption('FOXYSHMERTS.INC')
 
-image = pygame.image.load("pictures/bg.jpg")
+
+locations = [pygame.image.load("pictures/bg.jpg"),
+             pygame.image.load("pictures/sand.jpg"),
+             pygame.transform.scale(pygame.image.load("pictures/iron.jpg"), (1000, 1000))]
 player = Enemy("pictures/pers.png", 3, 0, 100, 5, 440, 350, 70, 120)
 main_title = Menu('pictures/title.png', 210, 200, 600, 80)
 start_button = Menu('pictures/start_button.png', 340, 500, 300, 100)
 exit_button = Menu('pictures/exit_button.png', 900, 0, 100, 100)
 lose_title1 = Menu('pictures/lose_text1.png', 210, 200, 600, 80)
 lose_title2 = Menu('pictures/lose_text_2.png', 400, 400, 600, 80)
+
+bg = locations(0)
 
 upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/big_cal.png", 'up_p', 5, 2, 0, 0, 0),
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
@@ -287,7 +292,7 @@ hd.start()
 while Game:
     while menu:
         for event in pygame.event.get():
-            win.blit(image, (0, 0))
+            win.blit(bg, (0, 0))
             win.blit(player.model, [player.x, player.y])
             win.blit(main_title.picture, (main_title.x, main_title.y))
             win.blit(start_button.picture, (start_button.x, start_button.y))
@@ -335,7 +340,7 @@ while Game:
             player.x = 440
             player.y = 350
             hard_k = 1
-        win.blit(image, (0, 0))
+        win.blit(bg, (0, 0))
         if not Pause:
             moving_enemy()
             moving_player()
