@@ -239,7 +239,9 @@ exit_button = Menu('pictures/exit_button.png', 900, 0, 100, 100)
 lose_title1 = Menu('pictures/lose_text1.png', 210, 200, 600, 80)
 lose_title2 = Menu('pictures/lose_text_2.png', 400, 400, 600, 80)
 
-bg = locations[0]
+loc = 0
+
+bg = locations[loc]
 
 upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/big_cal.png", 'up_p', 5, 2, 0, 0, 0),
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
@@ -315,6 +317,11 @@ while Game:
                     menu = False
                     Game = False
                     working = False
+                if location_button.x <= x <= location_button.x + location_button.height and location_button.y <= y <= location_button.y + location_button.width:
+                    loc += 1
+                    if loc >= len(locations):
+                        loc = 0
+                    bg = locations[loc]
 
     while run:
         is_shooting = True
