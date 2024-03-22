@@ -65,7 +65,7 @@ def spawn():
         while is_spawning:
             hams.append(Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
                               randint(0, 1000), 100, 60))
-            pygame.time.delay(1000)
+            pygame.time.delay(1500)
 
 
 def moving_player():
@@ -115,8 +115,8 @@ def moving_enemy():
         dx = player.x - hams[i].x
         dy = player.y - hams[i].y
         distanse = math.sqrt(dx * dx + dy * dy)
-        hams[i].x += hams[i].speed * dx / distanse
-        hams[i].y += hams[i].speed * dy / distanse
+        hams[i].x += (hams[i].speed + debuff[1]) * dx / distanse
+        hams[i].y += (hams[i].speed + debuff[1]) * dy / distanse
         if dx > 0:
             win.blit(hams[i].revers_model, [hams[i].x, hams[i].y])
         else:
@@ -219,7 +219,7 @@ shot = threading.Thread(target=shoot)
 sp = threading.Thread(target=spawn)
 hd = threading.Thread(target=hard)
 
-buff = [0, 0, 0, 0]
+buff = [0, 0, 2, 0]
 debuff = [0, 0]
 
 pygame.get_init()
@@ -249,11 +249,11 @@ upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/bi
             upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 2),
             upgrade_card("Усовершенствованный затвор", 1, "pictures/up_cards/b_shutter.png", 'up_p', -2, -2, 0, 0, 0),
             upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -2, 0, 0),
-            upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 5, 0, 0),
+            upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 2, 0, 0),
             upgrade_card("Бига", 2, "pictures/up_cards/biga.png", 'up_p', 0, 0, 0, 75, 0),
             upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 8),
             upgrade_card("Калибр бабахи", 3, "pictures/up_cards/babaha.png", 'up_p', 20, 8, 0, 0, 0),
-            upgrade_card("Пушка от A10 Thunderbolt", 3, "pictures/up_cards/a10.png", 'up_p', -40, -20, 0, 0, 0)]
+            upgrade_card("Пушка от A10 Thunderbolt", 3, "pictures/up_cards/a10.png", 'up_p', -30, -20, 0, 0, 0)]
 
 # upgrades  = [upgrade_card("Большой калибр", 1, "Большие пушки - большой калибр. Увеличивает урон, увеличивает перезардку", 'up_p', 5, -2, 0, 0, 0),
 #    upgrade_card("Миник", 1, "Выпей миник, немного повысь лимит здоровья", 'up_p', 0, 0, 0, 25, 0),
