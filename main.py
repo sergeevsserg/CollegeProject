@@ -234,11 +234,12 @@ locations = [pygame.image.load("pictures/bg.jpg"),
 player = Enemy("pictures/pers.png", 3, 0, 100, 5, 440, 350, 70, 120)
 main_title = Menu('pictures/title.png', 210, 200, 600, 80)
 start_button = Menu('pictures/start_button.png', 340, 500, 300, 100)
+location_button = Menu('pictures/location_button.png', 340, 630, 300, 100)
 exit_button = Menu('pictures/exit_button.png', 900, 0, 100, 100)
 lose_title1 = Menu('pictures/lose_text1.png', 210, 200, 600, 80)
 lose_title2 = Menu('pictures/lose_text_2.png', 400, 400, 600, 80)
 
-bg = locations(0)
+bg = locations[0]
 
 upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/big_cal.png", 'up_p', 5, 2, 0, 0, 0),
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
@@ -297,6 +298,7 @@ while Game:
             win.blit(main_title.picture, (main_title.x, main_title.y))
             win.blit(start_button.picture, (start_button.x, start_button.y))
             win.blit(exit_button.picture, (exit_button.x, exit_button.y))
+            win.blit(location_button.picture, (location_button.x, location_button.y))
             pygame.display.update()
             if event.type == pygame.QUIT:
                 working = False
