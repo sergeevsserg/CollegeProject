@@ -61,10 +61,14 @@ def shoot():
 
 
 def spawn():
+    a = 0
+    robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
+                   randint(0, 1000), 100, 60)
     while working:
         while is_spawning:
-            hams.append(Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
-                              randint(0, 1000), 100, 60))
+            wrag = robosp
+            hams.append(wrag)
+            a += 1
             pygame.time.delay(1500)
 
 
@@ -248,7 +252,7 @@ upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/bi
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
             upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 2),
             upgrade_card("Усовершенствованный затвор", 1, "pictures/up_cards/b_shutter.png", 'up_p', -2, -2, 0, 0, 0),
-            upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -2, 0, 0),
+            upgrade_card("Липкое масло", 1, "pictures/up_cards/sticky_oil.png", 'weakness', 0, 0, -0.5, 0, 0),
             upgrade_card("Паровые тяги", 2, 'pictures/up_cards/steam_tygi.png', 'up_p', 0, 0, 2, 0, 0),
             upgrade_card("Бига", 2, "pictures/up_cards/biga.png", 'up_p', 0, 0, 0, 75, 0),
             upgrade_card('Квантовый щит', 2, "pictures/up_cards/quantum_shield.png", 'up_p', 0, 0, 0, 0, 8),
