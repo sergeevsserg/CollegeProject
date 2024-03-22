@@ -72,12 +72,12 @@ def moving_player():
     rot = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a] and player.x > 0:
-        player.x -= player.speed - buff[2]
+        player.x -= player.speed + buff[2]
         rot = True
     if keys[pygame.K_d] and player.x < 880:
         player.x += player.speed + buff[2]
     if keys[pygame.K_w] and player.y > 0:
-        player.y -= player.speed - buff[2]
+        player.y -= player.speed + buff[2]
     if keys[pygame.K_s] and player.y < 900:
         player.y += player.speed + buff[2]
     if rot:
@@ -150,7 +150,7 @@ def touch_kill():
                 if bullets[j].damage + buff[0] > 0:
                     hams[i].hp -= bullets[j].damage + buff[0]
                 else:
-                    hams[i].hp -= 0.1
+                    hams[i].hp -= 0.2
                 kill_list2.append(j)
         if hams[i].hp <= 0:
             kill_list.append(i)
@@ -243,6 +243,7 @@ loc = 0
 
 bg = locations[loc]
 
+
 upgrades = [upgrade_card("Большой калибр", 1, "pictures/up_cards/big_cal.png", 'up_p', 5, 2, 0, 0, 0),
             upgrade_card("Миник", 1, "pictures/up_cards/minic.png", 'up_p', 0, 0, 0, 25, 0),
             upgrade_card("Бронепластина", 1, "pictures/up_cards/armorplate.png", 'up_p', 0, 0, 0, 0, 2),
@@ -278,6 +279,8 @@ current_xp = 0
 xp_need = 100
 f1 = pygame.font.Font(None, 36)
 
+text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
+
 is_spawning = False
 get_harder = False
 working = True
@@ -301,6 +304,7 @@ while Game:
             win.blit(start_button.picture, (start_button.x, start_button.y))
             win.blit(exit_button.picture, (exit_button.x, exit_button.y))
             win.blit(location_button.picture, (location_button.x, location_button.y))
+            win.blit(text_loc, (200, 750))
             pygame.display.update()
             if event.type == pygame.QUIT:
                 working = False
@@ -322,6 +326,12 @@ while Game:
                     if loc >= len(locations):
                         loc = 0
                     bg = locations[loc]
+                    if loc == 0:
+                        text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
+                    elif loc == 1:
+                        text_loc = f1.render("+20% к скорости врагов, -10% к урону врагов", 1, (255, 0, 0))
+                    else:
+                        text_loc = f1.render("+20% здоровья врагов, +20% к урону врагов, +50% к опыту", 1, (255, 0, 0))
 
     while run:
         is_shooting = True
@@ -336,6 +346,8 @@ while Game:
                 run = False
                 Game = False
         if player.hp <= 0:
+            buff = [0, 0, 0, 0]
+            debuff = [0, 0]
             is_shooting = False
             is_spawning = False
             get_harder = False
