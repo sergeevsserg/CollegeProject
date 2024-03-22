@@ -62,24 +62,35 @@ def shoot():
 
 def spawn():
     a = 0
-    robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
-                   randint(0, 1000), 100, 60)
     while working:
         while is_spawning:
-            wrag = robosp
-            hams.append(wrag)
+            h = randint(1, 4)
+            if h == 1:
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
+                               randint(-10, 0), 100, 60)
+            elif h == 2:
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(1000, 1010),
+                               randint(0, 1000), 100, 60)
+            elif h == 3:
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(0, 1000),
+                               randint(1000, 1010), 100, 60)
+            else:
+                robosp = Enemy("pictures/hames.png", 1 * hard_k, 1 * hard_k, 5 * hard_k, 5 * hard_k, randint(-10, 0),
+                               randint(0, 1000), 100, 60)
+            hams.append(robosp)
             a += 1
             pygame.time.delay(1500)
 
 
 def moving_player():
-    rot = False
+    global rot
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a] and player.x > 0:
         player.x -= player.speed + buff[2]
         rot = True
     if keys[pygame.K_d] and player.x < 880:
         player.x += player.speed + buff[2]
+        rot = False
     if keys[pygame.K_w] and player.y > 0:
         player.y -= player.speed + buff[2]
     if keys[pygame.K_s] and player.y < 900:
@@ -145,7 +156,7 @@ def touch_kill():
     for i in range(len(hams)):
         if player.x - player.height / 2 <= hams[i].x <= player.x + player.height / 2 and player.y - player.width / 2.5 <= hams[i].y <= player.y + player.width / 1.2:
             if hams[i].damage - buff[3] - debuff[0] > 0:
-                player.hp -= hams[i].damage - buff[3] - debuff[0]
+                player.hp -= hams[i].damage - buff[3] + debuff[0]
             else:
                 player.hp -= 1
             kill_list.append(i)
@@ -154,13 +165,14 @@ def touch_kill():
                 if bullets[j].damage + buff[0] > 0:
                     hams[i].hp -= bullets[j].damage + buff[0]
                 else:
-                    hams[i].hp -= 0.2
+                    hams[i].hp -= 0.1
                 kill_list2.append(j)
         if hams[i].hp <= 0:
             kill_list.append(i)
     for b in kill_list:
         if b < len(hams):
             hams.pop(b)
+            bullets.clear()
             current_xp += 20
     for u in kill_list2:
         if u < len(bullets):
@@ -223,8 +235,8 @@ shot = threading.Thread(target=shoot)
 sp = threading.Thread(target=spawn)
 hd = threading.Thread(target=hard)
 
-buff = [0, 0, 2, 0]
-debuff = [0, 0]
+buff = [0, 0, 0, 0]
+debuff = [0, 0, 0]
 
 pygame.get_init()
 pygame.font.init()
@@ -281,10 +293,12 @@ x = 0
 y = 0
 current_xp = 0
 xp_need = 100
+xp_cof = 1
 f1 = pygame.font.Font(None, 36)
 
 text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
 
+rot = False
 is_spawning = False
 get_harder = False
 working = True
@@ -332,10 +346,16 @@ while Game:
                     bg = locations[loc]
                     if loc == 0:
                         text_loc = f1.render("Обычная локация без усложнений", 1, (255, 0, 0))
+                        debuff = [0, 0, 0]
+                        xp_cof = 1
                     elif loc == 1:
-                        text_loc = f1.render("+20% к скорости врагов, -10% к урону врагов", 1, (255, 0, 0))
+                        text_loc = f1.render("+2 к скорости врагов, -2 к урону врагов", 1, (255, 0, 0))
+                        debuff = [-2, 2, 0]
+                        xp_cof = 1
                     else:
-                        text_loc = f1.render("+20% здоровья врагов, +20% к урону врагов, +50% к опыту", 1, (255, 0, 0))
+                        text_loc = f1.render("+10 здоровья врагов, +2 к урону врагов, +50% к опыту", 1, (255, 0, 0))
+                        debuff = [2, 0, 10]
+                        xp_cof = 1.5
 
     while run:
         is_shooting = True
